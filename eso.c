@@ -34,6 +34,12 @@ struct pvd {
     u_int16_t logical_block_size;
 };
 
+// НОРМ ГЛЕБАС???? ТОК ЧЕСТНО
+// СТРИМ ВРУБИЛ
+// ЩА КОДИТЬ БУДЕТ
+// ОК??? ТОК ЧЕСТОНО
+// ЭТА ИГРА УЖЕ ЕСТЬ
+// НАЗЫВАЕТСЯ ФЛИНТ
 struct data {
     char* id;
 
@@ -143,8 +149,16 @@ bool is_folder(u_int8_t flags) {
 
 data parse_data(char* iso, pvd* pvdbuff, u_int32_t offset) {
     data new_data;
+    new_data.id = NULL;
+    
+    if (*(iso + offset) == 0)
+        return new_data;
+    
+    new_data.flags = *(iso + offset + 25);
     
     size_t id_length = *(iso + offset + 32);
+    if (!is_folder(new_data.flags))
+        id_length -= 2;
     new_data.id = malloc((id_length+1)*sizeof(char));
     memcpy(new_data.id, iso + offset + 33, id_length);
     new_data.id[id_length] = '\0';
@@ -153,7 +167,6 @@ data parse_data(char* iso, pvd* pvdbuff, u_int32_t offset) {
 
     memcpy(&new_data.extent_location, iso + offset + 2, 4);
 
-    new_data.flags = *(iso + offset + 25);
     new_data.entry_size = *(iso + offset);
     
     int year = 1900 + *(iso + offset + 18);
@@ -221,7 +234,8 @@ void free_directory_tree(directory* d) {
     free_directory_tree(d->next);
     free_directory_tree(d->extent);
 
-    free(d->data.id);
+    if (d->data.id)
+        free(d->data.id);
     free(d);
 }
 
