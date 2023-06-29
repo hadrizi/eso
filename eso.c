@@ -338,9 +338,9 @@ int main(int argc, char *argv[]) {
                 target->data.datetime,
                 target->data.id
             );
+            free(flag_str);
             target = target->next;
         }
-        free(flag_str);
     } else if (strcmp(argv[2], "cat") == 0) {
         directory* target = search_tree_by_id(root, argv[3]);
         if (target == NULL) {
